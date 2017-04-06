@@ -36,7 +36,7 @@ class GeneratorTest(ut.TestCase):
 
 class ArgParserTest(ut.TestCase):
     def test_parse(self):
-        args = ['-u', 'userid', '-p', 'password', 'inifile.ini']
+        args = ['userid', 'password', 'inifile.ini']
         parser = randomtweet.ArgParser()
         args = parser.parse_args(args)
         self.assertEqual('userid', args.userid)

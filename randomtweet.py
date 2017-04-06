@@ -41,8 +41,8 @@ class Generator(object):
 class ArgParser(argparse.ArgumentParser):
     def __init__(self):
         super().__init__()
-        self.add_argument('-u', '--userid')
-        self.add_argument('-p', '--password')
+        self.add_argument('userid')
+        self.add_argument('password')
         self.add_argument('inifile')
 
 
