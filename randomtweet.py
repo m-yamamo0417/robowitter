@@ -55,14 +55,15 @@ def main():
     generator = Generator(config)
     tweet = generator.generate()
 
-    with common.phantomjs() as driver:
-        twitter.TopPage(driver)\
-               .input_user_id(args.userid)\
-               .input_password(args.password)\
-               .login()\
-               .to_input_tweet()\
-               .input_tweet(tweet)\
-               .tweet()
+    with common.xvfb():
+        with common.firefox() as driver:
+            twitter.TopPage(driver)\
+                   .input_user_id(args.userid)\
+                   .input_password(args.password)\
+                   .login()\
+                   .to_input_tweet()\
+                   .input_tweet(tweet)\
+                   .tweet()
 
 
 if __name__ == '__main__':

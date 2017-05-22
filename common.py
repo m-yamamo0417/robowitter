@@ -31,9 +31,21 @@ def firefox():
         with firefox() as driver:
             ...
     """
-    driver = webdriver.Firefox()
-    yield driver
-    driver.close()
+    try:
+        capabilities = webdriver.DesiredCapabilities().FIREFOX
+        capabilities['acceptInsecureCerts'] = False
+        driver = webdriver.Firefox(capabilities=capabilities)
+        driver.implicitly_wait(10)
+        yield driver
+    except Exception as e:
+        driver.save_screenshot('out.png')
+        with open('dump.html', 'w') as f:
+            body = driver.find_element_by_tag_name('body')
+            f.write(body.get_attribute('innerHTML'))
+        raise e
+    finally:
+        if driver:
+            driver.quit()
 
 @contextmanager
 def xvfb():
@@ -43,13 +55,16 @@ def xvfb():
             ...
     """
     display_no = ':9'
-    proc = subprocess.Popen(['Xvfb', '-ac', display_no])
-    os.environ['DISPLAY'] = display_no
+    try:
+        proc = subprocess.Popen(['Xvfb', '-ac', display_no])
+        os.environ['DISPLAY'] = display_no
 
-    yield
+        yield
 
-    proc.kill()
-    os.environ.pop('DISPLAY')
+    finally:
+        if proc:
+            proc.kill()
+            os.environ.pop('DISPLAY')
 
 
 # -----------------------------------------------------------------------------
