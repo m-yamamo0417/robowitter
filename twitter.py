@@ -33,12 +33,10 @@ class HomePage(object):
         self._driver = driver
         
     def to_input_tweet(self):
-        try:
-            xpath = '//span[contains(text(), "Sounds good")]/parent'
-            button = self._driver.find_element_by_xpath(xpath)
-            button.click()
-        except NoSuchElementException:
-            pass
+        xpath = '//button[@testid="Button"]'
+        buttons = self._driver.find_elements_by_xpath(xpath)
+        if len(buttons) == 2:
+            button[0].click()
         xpath = '//a[@href="/compose/tweet"]'
         link = self._driver.find_element_by_xpath(xpath)
         link.click()
@@ -65,8 +63,8 @@ class TweetPage(object):
 def main():
     with common.xvfb():
         with common.firefox() as driver:
-            TopPage(driver).input_user_id('XXXX')\
-                           .input_password('XXXX')\
+            TopPage(driver).input_user_id('PiRobowitter')\
+                           .input_password('robo.m.yamamo.tter')\
                            .login()\
                            .to_input_tweet()\
                            .input_tweet('テストですよ')\

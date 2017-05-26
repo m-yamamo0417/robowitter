@@ -34,7 +34,8 @@ def firefox():
     try:
         capabilities = webdriver.DesiredCapabilities().FIREFOX
         capabilities['acceptInsecureCerts'] = False
-        driver = webdriver.Firefox(capabilities=capabilities)
+        driver = webdriver.Firefox(capabilities=capabilities,
+                                   executable_path='/usr/local/bin/geckodriver')
         driver.implicitly_wait(10)
         yield driver
     except Exception as e:
