@@ -33,7 +33,7 @@ class HomePage(object):
         self._driver = driver
         
     def to_input_tweet(self):
-        xpath = '//button[@testid="Button"]'
+        xpath = '//button[@data-testid="Button"]'
         buttons = self._driver.find_elements_by_xpath(xpath)
         if len(buttons) == 2:
             button[0].click()
@@ -63,8 +63,8 @@ class TweetPage(object):
 def main():
     with common.xvfb():
         with common.firefox() as driver:
-            TopPage(driver).input_user_id('PiRobowitter')\
-                           .input_password('robo.m.yamamo.tter')\
+            TopPage(driver).input_user_id('user')\
+                           .input_password('pass')\
                            .login()\
                            .to_input_tweet()\
                            .input_tweet('テストですよ')\

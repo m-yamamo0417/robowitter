@@ -31,18 +31,19 @@ def firefox():
         with firefox() as driver:
             ...
     """
+    path_geckodriver = '/usr/local/bin/geckodriver'
     try:
         capabilities = webdriver.DesiredCapabilities().FIREFOX
         capabilities['acceptInsecureCerts'] = False
         driver = webdriver.Firefox(capabilities=capabilities,
-                                   executable_path='/usr/local/bin/geckodriver')
+                                   executable_path=path_geckodriver)
         driver.implicitly_wait(10)
         yield driver
     except Exception as e:
         driver.save_screenshot('out.png')
         with open('dump.html', 'w') as f:
-            body = driver.find_element_by_tag_name('body')
-            f.write(body.get_attribute('innerHTML'))
+            html = driver.find_element_by_tag_name('html')
+            f.write(html.get_attribute('innerHTML'))
         raise e
     finally:
         if driver:
