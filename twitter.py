@@ -22,7 +22,7 @@ class TopPage(object):
         return self
 
     def login(self):
-        xpath = '//button[@type="submit"]'
+        xpath = '//input[@type="submit"]'
         btn = self._driver.find_element_by_xpath(xpath)
         btn.click()
         return HomePage(self._driver)
@@ -48,13 +48,13 @@ class TweetPage(object):
         self._driver = driver
 
     def input_tweet(self, tweet):
-        xpath = '//textarea[@data-testid="tweet-textarea"]'
+        xpath = '//textarea[@name="tweet[text]"]'
         elm = self._driver.find_element_by_xpath(xpath)
         elm.send_keys(tweet)
         return self
 
     def tweet(self):
-        xpath = '//button[@data-testid="tweet-button"]'
+        xpath = '//input[@type="submit"]'
         elm = self._driver.find_element_by_xpath(xpath)
         elm.click()
         return self
@@ -63,8 +63,8 @@ class TweetPage(object):
 def main():
     with common.xvfb():
         with common.firefox() as driver:
-            TopPage(driver).input_user_id('user')\
-                           .input_password('pass')\
+            TopPage(driver).input_user_id('PiRobowitter')\
+                           .input_password('robo.m.yamamo.tter')\
                            .login()\
                            .to_input_tweet()\
                            .input_tweet('テストですよ')\

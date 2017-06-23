@@ -6,10 +6,12 @@
 import logging
 import os
 import subprocess
+import time
 
 from contextlib import contextmanager
 
 from selenium import webdriver
+from selenium.common.exceptions import NoSuchElementException
 
 # -----------------------------------------------------------------------------
 logger = logging.getLogger(__name__)
@@ -20,8 +22,18 @@ logger = logging.getLogger(__name__)
 def phantomjs():
     driver = webdriver.PhantomJS('phantomjs',
                                  service_args=['--ssl-protocol=tlsv1'])
-    yield driver
-    driver.close()
+    try:
+        yield driver
+    except Exception as e:
+        driver.save_screenshot('out.png')
+        elm_html = driver.find_element_by_tag_name('html')
+        html = elm_html.get_attribute('innerHTML')
+        with open('dump.html', 'w') as f:
+            f.write(html)
+        raise e
+    finally:
+        if driver:
+            driver.close()
 
 
 @contextmanager
@@ -35,8 +47,8 @@ def firefox():
     try:
         capabilities = webdriver.DesiredCapabilities().FIREFOX
         capabilities['acceptInsecureCerts'] = False
-        driver = webdriver.Firefox(capabilities=capabilities,
-                                   executable_path=path_geckodriver)
+        driver = RetryDriver(capabilities=capabilities,
+                             executable_path=path_geckodriver)
         driver.implicitly_wait(10)
         yield driver
     except Exception as e:
@@ -70,6 +82,21 @@ def xvfb():
 
 
 # -----------------------------------------------------------------------------
+class RetryDriver(webdriver.Firefox):
+    def find_element(self, by='id', value=None):
+        exc = None
+        for i in range(5):
+            exc = None
+            try:
+                return super().find_element(by, value)
+            except NoSuchElementException as ex:
+                logger.warn(ex)
+                exc = ex
+                time.sleep(3)
+        if exc is not None:
+            raise exc
+
+
 class ClowdSourcing(object):
     def __init__(self, driver, user, password):
         self._driver   = driver
